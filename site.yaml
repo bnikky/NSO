@@ -1,0 +1,71 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+
+  - name: apt update
+    apt:
+      update_cache: yes
+  - name: install pip3
+    apt:
+      name: python3-pip
+      state: latest
+  - name: installing flask
+    pip:
+      executable: pip3
+      name: flask
+      state: latest
+
+  - name: copy application.py
+    copy:
+      src: /$PWD/application.py
+      dest: /home/ubuntu/application.py
+  - name: running flask application
+    shell: |
+      nohup python3 application.py > log.txt 2>&1 &
+
+
+
+- hosts: all
+  gather_facts: yes
+- hosts: haproxy
+  become: yes
+  tasks:
+
+   - name: apt update
+     apt:
+       update_cache: yes
+   - name: Install haproxy
+     apt:
+       name: haproxy
+       state: present
+   - name: configure haproxy
+     template:
+       src: /$PWD/haproxy.cfg.j2
+       dest: /etc/haproxy/haproxy.cfg
+
+   - name: restart haproxy
+     service:
+       name: haproxy
+       state: restarted
+
+   - name: Request 1
+     uri:
+       url: http://localhost/
+       return_content: yes
+     register: ro
+   - debug: msg='{{ ro.content }}'
+
+   - name: Request 2
+     uri:
+       url: http://localhost/
+       return_content: yes
+     register: ro
+   - debug: msg='{{ ro.content }}'
+
+   - name: Request 3
+     uri:
+       url: http://localhost/
+       return_content: yes
+     register: ro
+   - debug: msg='{{ ro.content }}'
