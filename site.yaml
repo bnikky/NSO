@@ -28,7 +28,7 @@
 
 - hosts: all
   gather_facts: yes
-- hosts: haproxy
+- hosts: HAproxy
   become: yes
   tasks:
 
