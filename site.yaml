@@ -21,8 +21,8 @@
       src: /$PWD/application.py
       dest: /home/ubuntu/application.py
   - name: running flask application
-    shell: |
-      nohup python3 application.py > log.txt 2>&1 &
+    shell: 
+      python3 application.py&
 
 
 
